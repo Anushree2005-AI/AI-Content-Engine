@@ -38,14 +38,11 @@ def analyze_content(title):
     ViralScore: <number between 1 and 10>
     """
 
-    try:
-        response = model.generate_content(prompt)
-
-        text = response.text
-
-    except Exception as e:
-        print("Gemini Error:", e)
-        return "AI unavailable", "AI unavailable", "0"
+   try:
+    test = model.generate_content("Say hello")
+    st.write("Gemini connected successfully")
+except Exception as e:
+    st.write("Gemini error:", e)
 
     hook = ""
     script = ""
@@ -90,6 +87,7 @@ if st.button("Generate Content Ideas"):
     df = pd.DataFrame(results)
 
     st.dataframe(df)
+
 
 
 
