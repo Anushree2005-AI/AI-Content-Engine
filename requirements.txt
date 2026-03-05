@@ -3,4 +3,5 @@ feedparser
 gspread
 oauth2client
 google-generativeai
+requests
 pandas
