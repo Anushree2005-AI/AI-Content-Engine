@@ -1,0 +1,6 @@
+streamlit
+feedparser
+gspread
+oauth2client
+google-generativeai
+pandas
