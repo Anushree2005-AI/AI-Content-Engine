@@ -36,6 +36,4 @@ Streamlit Dashboard
 - Provides a simple dashboard interface
 - Helps creators identify viral content ideas quickly
 
-## Installation
 
-Clone the repository:
