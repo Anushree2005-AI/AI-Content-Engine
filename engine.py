@@ -4,7 +4,7 @@ import google.generativeai as genai
 import pandas as pd
 
 # Configure Gemini API
-genai.configure(api_key="AIzaSyBrlKzsb_XeSdFdp_veQ9ArIkkZKgmWTn4")
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
 model = genai.GenerativeModel("gemini-1.5-flash")
 
@@ -84,3 +84,4 @@ if st.button("Generate Content Ideas"):
     df = pd.DataFrame(results)
 
     st.dataframe(df)
+
