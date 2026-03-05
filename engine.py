@@ -2,6 +2,7 @@ import streamlit as st
 import feedparser
 import google.generativeai as genai
 import pandas as pd
+import requests
 
 # Read API key from Streamlit Secrets
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
@@ -24,10 +25,15 @@ rss_feeds = [
 ]
 
 
+
 def analyze_content(title):
 
+    api_key = st.secrets["GEMINI_API_KEY"]
+
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+
     prompt = f"""
-    Analyze this topic and create social media content insights.
+    Analyze this topic and generate social media content insights.
 
     Topic: {title}
 
@@ -38,21 +44,24 @@ def analyze_content(title):
     ViralScore: <number between 1 and 10>
     """
 
+    data = {
+        "contents": [{
+            "parts": [{"text": prompt}]
+        }]
+    }
+
     try:
-        response = model.generate_content(prompt)
+        response = requests.post(url, json=data)
+        result = response.json()
 
-        text = response.text
+        text = result["candidates"][0]["content"]["parts"][0]["text"]
 
-    except Exception as e:
-        print("Gemini Error:", e)
+    except:
         return "AI unavailable", "AI unavailable", "0"
 
-    hook = ""
-    script = ""
-    score = ""
+    hook, script, score = "", "", ""
 
     for line in text.split("\n"):
-
         if "Hook:" in line:
             hook = line.replace("Hook:", "").strip()
 
@@ -90,6 +99,7 @@ if st.button("Generate Content Ideas"):
     df = pd.DataFrame(results)
 
     st.dataframe(df)
+
 
 
 
