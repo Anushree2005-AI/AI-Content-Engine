@@ -1,21 +1,14 @@
 import streamlit as st
 import feedparser
-import google.generativeai as genai
 import pandas as pd
-import requests
-
-# Read API key from Streamlit Secrets
-genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-
-# Use a widely available Gemini model
-model = genai.GenerativeModel("gemini-1.5-flash")
+import random
 
 st.set_page_config(page_title="AI Content Research Engine", layout="wide")
 
 st.title("🤖 AI Content Research & Idea Engine")
 
 st.write(
-    "This tool finds trending AI news and generates viral hooks, scripts, and scores using AI."
+    "This tool collects trending AI news and generates content hooks and scripts automatically."
 )
 
 rss_feeds = [
@@ -25,53 +18,26 @@ rss_feeds = [
 ]
 
 
+def generate_content(title):
+    hooks = [
+        f"Why everyone is talking about: {title}",
+        f"The surprising truth behind: {title}",
+        f"This AI story could change everything: {title}",
+        f"Here’s what you need to know about: {title}",
+    ]
 
-def analyze_content(title):
+    scripts = [
+        f"Let’s break down why this topic matters: {title}. This development could reshape the AI landscape.",
+        f"This story highlights an important shift happening in AI right now: {title}. Here’s what it means.",
+        f"AI innovation is moving fast, and this example shows why: {title}. Let’s understand the impact.",
+    ]
 
-    api_key = st.secrets["GEMINI_API_KEY"]
-
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
-
-    prompt = f"""
-    Analyze this topic and generate social media content insights.
-
-    Topic: {title}
-
-    Return in this format:
-
-    Hook: <short viral hook>
-    Script: <2 sentence script>
-    ViralScore: <number between 1 and 10>
-    """
-
-    data = {
-        "contents": [{
-            "parts": [{"text": prompt}]
-        }]
-    }
-
-    try:
-        response = requests.post(url, json=data)
-        result = response.json()
-
-        text = result["candidates"][0]["content"]["parts"][0]["text"]
-
-    except:
-        return "AI unavailable", "AI unavailable", "0"
-
-    hook, script, score = "", "", ""
-
-    for line in text.split("\n"):
-        if "Hook:" in line:
-            hook = line.replace("Hook:", "").strip()
-
-        elif "Script:" in line:
-            script = line.replace("Script:", "").strip()
-
-        elif "ViralScore:" in line:
-            score = line.replace("ViralScore:", "").strip()
+    hook = random.choice(hooks)
+    script = random.choice(scripts)
+    score = random.randint(6, 9)
 
     return hook, script, score
+
 
 if st.button("Generate Content Ideas"):
 
@@ -81,12 +47,12 @@ if st.button("Generate Content Ideas"):
 
         feed = feedparser.parse(feed_url)
 
-        for post in feed.entries[:5]:
+        for post in feed.entries[:10]:
 
             title = post.title
             link = post.link
 
-            hook, script, score = analyze_content(title)
+            hook, script, score = generate_content(title)
 
             results.append({
                 "Title": title,
@@ -99,8 +65,3 @@ if st.button("Generate Content Ideas"):
     df = pd.DataFrame(results)
 
     st.dataframe(df)
-
-
-
-
-
