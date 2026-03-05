@@ -14,16 +14,19 @@ genai.configure(api_key="AIzaSyBrlKzsb_XeSdFdp_veQ9ArIkkZKgmWTn4")
 # =========================
 
 scope = [
-    "https://spreadsheets.google.com/feeds",
+    "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive"
 ]
 
 creds = ServiceAccountCredentials.from_json_keyfile_name(
-    "credentials.json", scope)
+    "credentials.json", scope
+)
 
 client = gspread.authorize(creds)
 
-sheet = client.open("AI Content Engine").sheet1
+sheet = client.open_by_url(
+    "https://docs.google.com/spreadsheets/d/1HedKfYOLYZ1htEAKm8S6_X7v8xDZiW2BHGe3oNwXRiY/edit?usp=sharing"
+).sheet1
 
 
 # =========================
@@ -148,3 +151,4 @@ if st.button("Generate Content Ideas"):
                 score
 
             ])
+
