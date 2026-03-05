@@ -3,9 +3,10 @@ import feedparser
 import google.generativeai as genai
 import pandas as pd
 
-# Configure Gemini API
+# Read API key from Streamlit Secrets
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
+# Use a widely available Gemini model
 model = genai.GenerativeModel("gemini-1.5-flash")
 
 st.set_page_config(page_title="AI Content Research Engine", layout="wide")
@@ -24,35 +25,31 @@ rss_feeds = [
 
 
 def analyze_content(title):
-
     prompt = f"""
     Analyze this topic and generate viral content insights.
 
     Topic: {title}
 
     Return in this format:
-
     Hook: <short viral hook>
-    Script: <2 sentence short script>
+    Script: <2 sentence script>
     ViralScore: <number between 1 and 10>
     """
 
-    response = model.generate_content(prompt)
+    try:
+        response = model.generate_content(prompt)
+        text = response.text
+    except Exception as e:
+        return "Error generating hook", "Error generating script", "0"
 
-    text = response.text
-
-    hook = ""
-    script = ""
-    score = ""
+    hook, script, score = "", "", ""
 
     for line in text.split("\n"):
         if "Hook:" in line:
             hook = line.replace("Hook:", "").strip()
-
-        if "Script:" in line:
+        elif "Script:" in line:
             script = line.replace("Script:", "").strip()
-
-        if "ViralScore:" in line:
+        elif "ViralScore:" in line:
             score = line.replace("ViralScore:", "").strip()
 
     return hook, script, score
@@ -84,4 +81,5 @@ if st.button("Generate Content Ideas"):
     df = pd.DataFrame(results)
 
     st.dataframe(df)
+
 
