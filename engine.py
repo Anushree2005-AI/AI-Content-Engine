@@ -1,17 +1,13 @@
 import streamlit as st
 import feedparser
-from google import genai
+import google.generativeai as genai
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
-
-
 # =========================
 # Gemini API
 # =========================
-
-genai_client = genai.Client(api_key="AIzaSyBrlKzsb_XeSdFdp_veQ9ArIkkZKgmWTn4")
-
+genai.configure(api_key="AIzaSyBrlKzsb_XeSdFdp_veQ9ArIkkZKgmWTn4")
 
 # =========================
 # Google Sheets connection
@@ -150,4 +146,5 @@ if st.button("Generate Content Ideas"):
                 hook,
                 script,
                 score
+
             ])
